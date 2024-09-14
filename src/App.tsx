@@ -1,10 +1,13 @@
-import { Text } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
+import { Header } from "./components/header";
+import { Plp } from "./components/plp";
 
 function App() {
   return (
-    <div>
-      <Text fontSize="2xl">Kata Shop</Text>
-    </div>
+    <Box>
+      <Header />
+      <Plp />
+    </Box>
   );
 }
 
