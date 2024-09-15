@@ -13,13 +13,13 @@ export function Header({ basket, priceList, openCheckout }: HeaderProps) {
     (acc = 0, curr = 0) => acc + curr,
     0
   );
-  const total = calculateBasketTotal(basket, priceList);
+  const basketTotal = calculateBasketTotal(basket, priceList);
   return (
     <Box as="header" p="4" bg="gray.800" color="white" display="flex">
       <Text fontSize="lg">kata-shop</Text>
       <Box as="span" ml="auto">
         <Text fontSize="lg">items: {itemsInBasket}</Text>
-        <Text fontSize="lg">{formatPrice(total)}</Text>
+        <Text fontSize="lg">{formatPrice(basketTotal.total)}</Text>
         <Button colorScheme="teal" ml="4" onClick={openCheckout}>
           Checkout
         </Button>

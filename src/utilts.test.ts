@@ -21,15 +21,28 @@ describe("formatPrice", () => {
 const baskets = [
   {
     basket: { a: 2, c: 1 },
-    expected: 200,
+    expected: {
+      total: 200,
+      feedback: {
+        a: "Offer: add 2 more to benefit from 3 for 130",
+      },
+    },
   },
   {
     basket: { a: 5, d: 2 },
-    expected: 290,
+    expected: {
+      total: 290,
+      feedback: {
+        a: "Offer: add 2 more to benefit from 3 for 130",
+      },
+    },
   },
   {
     basket: { c: 5, b: 4 },
-    expected: 530,
+    expected: {
+      total: 530,
+      feedback: { b: "Offer: add 1 more to benefit from 3 for 20" },
+    },
   },
 ];
 
@@ -42,9 +55,9 @@ const priceList = {
 
 describe("calculateBasketTotal", () => {
   baskets.forEach(({ basket, expected }) => {
-    it(`should calculate the correct total for a basket: ${expected}`, () => {
+    it(`should calculate the correct total for a basket: ${expected.total}`, () => {
       const result = calculateBasketTotal(basket, priceList);
-      expect(result).toBe(expected);
+      expect(result).toEqual(expected);
     });
   });
 });

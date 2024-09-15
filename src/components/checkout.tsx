@@ -28,7 +28,7 @@ export function Checkout({
   closeModal,
   handleUpdateQuantity,
 }: CheckoutProps) {
-  const total = calculateBasketTotal(basket, priceList);
+  const basketTotal = calculateBasketTotal(basket, priceList);
   if (priceList == null) {
     return <Text>No price list found</Text>;
   }
@@ -38,9 +38,12 @@ export function Checkout({
         basket={basket}
         priceList={priceList}
         handleUpdateQuantity={handleUpdateQuantity}
+        basketFeedback={basketTotal.feedback}
       />
       <Box display="flex" py={4} justifyContent="space-between">
-        <Text fontSize="lg">Basket price: {formatPrice(total)}</Text>
+        <Text fontSize="lg">
+          Basket price: {formatPrice(basketTotal.total)}
+        </Text>
         <Box display="flex">
           <Button onClick={closeModal}>Cancel</Button>
           <Button colorScheme="teal" ml="4" type="submit">
@@ -56,12 +59,14 @@ interface BasketItemsProps {
   basket: Basket;
   priceList: PriceList;
   handleUpdateQuantity: (sku: string, quantity: number) => void;
+  basketFeedback: Record<string, string>;
 }
 
 function BasketItems({
   basket,
   priceList,
   handleUpdateQuantity,
+  basketFeedback,
 }: BasketItemsProps) {
   return (
     <Box>
@@ -73,6 +78,7 @@ function BasketItems({
           const price = priceList[sku].price;
           const quantity = basket[sku];
           const offer = priceList[sku].offer;
+          const feedback = basketFeedback[sku];
           // our Basket type allows undefined, but we know it's defined here so we cast to number
           return (
             <Item
@@ -82,6 +88,7 @@ function BasketItems({
               offer={offer}
               quantity={quantity as number}
               handleUpdateQuantity={handleUpdateQuantity}
+              feedback={feedback}
             />
           );
         })}
@@ -95,6 +102,7 @@ interface ItemProps {
   offer: string | null;
   quantity: number;
   handleUpdateQuantity: (sku: string, quantity: number) => void;
+  feedback: string | undefined;
 }
 
 function Item({
@@ -103,6 +111,7 @@ function Item({
   offer,
   quantity,
   handleUpdateQuantity,
+  feedback,
 }: ItemProps) {
   return (
     <Box>
@@ -115,8 +124,11 @@ function Item({
           {offer}
         </Text>
       )}
-      <Box></Box>
-
+      {feedback && (
+        <Text color="red.500" textAlign="center">
+          {feedback}
+        </Text>
+      )}
       <NumberInput
         step={1}
         min={0}

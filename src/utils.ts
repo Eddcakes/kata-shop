@@ -23,24 +23,32 @@ export const formatPrice = (price: number) => {
 };
 
 export const logger = (message: string) => {
-  // could be a logger service
+  // could be a logger service that pushes to a logging service and removes console logs in production
   console.log(message);
 };
+
+interface BasketTotal {
+  total: number;
+  feedback: Record<string, string>;
+}
 
 export const calculateBasketTotal = (
   basket: Basket,
   priceList: PriceList | null
-) => {
-  let total = 0;
+): BasketTotal => {
+  // initialise total and feedback
+  const basketTotal = { total: 0, feedback: {} as Record<string, string> };
   if (priceList == null) {
     logger("No price list found");
-    return total;
+    basketTotal.feedback = { error: "No price list found" };
+    return basketTotal;
   }
   Object.keys(basket).forEach((sku) => {
     // should never be null|undefined, but avoids ignoring TS error
     if (basket[sku] == null) return;
     if (priceList[sku] == null) {
       logger(`No price found for SKU: ${sku}`);
+      basketTotal.feedback[sku] = "No price found";
       return;
     }
     const price = priceList[sku].price;
@@ -50,19 +58,22 @@ export const calculateBasketTotal = (
       const { offerQuantity, offerPrice } = offerHelper(offer);
       const remainder = quantity % offerQuantity;
       if (remainder > 0) {
-        logger(`Offer: add ${remainder} more to benifit from ${offer}`);
+        logger(`Offer: add ${remainder} more to benefit from ${offer}`);
+        basketTotal.feedback[
+          sku
+        ] = `Offer: add ${remainder} more to benefit from ${offer}`;
       }
       // at offer
       const offersUsed = Math.floor(quantity / offerQuantity);
       const offerCost = offersUsed * offerPrice;
       const remainderCost = remainder * price;
       // how many times offer is applicable
-      total += offerCost + remainderCost;
+      basketTotal.total += offerCost + remainderCost;
       return;
     }
-    total += price * quantity;
+    basketTotal.total += price * quantity;
   });
-  return total;
+  return basketTotal;
 };
 
 // helper to extract offer quantity and price from offer string
