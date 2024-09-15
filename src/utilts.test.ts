@@ -18,10 +18,20 @@ describe("formatPrice", () => {
   });
 });
 
-const basket = {
-  a: 2,
-  c: 1,
-};
+const baskets = [
+  {
+    basket: { a: 2, c: 1 },
+    expected: 200,
+  },
+  {
+    basket: { a: 5, d: 2 },
+    expected: 290,
+  },
+  {
+    basket: { c: 5, b: 4 },
+    expected: 530,
+  },
+];
 
 const priceList = {
   a: { price: 50, offer: "3 for 130" },
@@ -30,10 +40,11 @@ const priceList = {
   d: { price: 30, offer: null },
 };
 
-// calculate basket
 describe("calculateBasketTotal", () => {
-  it("should calculate the total for a basket", () => {
-    const result = calculateBasketTotal(basket, priceList);
-    expect(result).toBe(200);
+  baskets.forEach(({ basket, expected }) => {
+    it(`should calculate the correct total for a basket: ${expected}`, () => {
+      const result = calculateBasketTotal(basket, priceList);
+      expect(result).toBe(expected);
+    });
   });
 });

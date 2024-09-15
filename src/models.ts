@@ -5,5 +5,9 @@ export interface Product {
 }
 
 export interface Basket {
-  [sku: string]: number;
+  [sku: string]: number | undefined;
+}
+
+export interface PriceList {
+  [sku: string]: { price: number; offer: string | null };
 }
