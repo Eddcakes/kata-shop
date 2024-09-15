@@ -5,9 +5,10 @@ import { calculateBasketTotal, formatPrice } from "../utils";
 interface HeaderProps {
   basket: Basket;
   priceList: PriceList | null;
+  openCheckout: () => void;
 }
 
-export function Header({ basket, priceList }: HeaderProps) {
+export function Header({ basket, priceList, openCheckout }: HeaderProps) {
   const itemsInBasket = Object.values(basket).reduce(
     (acc = 0, curr = 0) => acc + curr,
     0
@@ -19,7 +20,7 @@ export function Header({ basket, priceList }: HeaderProps) {
       <Box as="span" ml="auto">
         <Text fontSize="lg">items: {itemsInBasket}</Text>
         <Text fontSize="lg">{formatPrice(total)}</Text>
-        <Button colorScheme="teal" ml="4">
+        <Button colorScheme="teal" ml="4" onClick={openCheckout}>
           Checkout
         </Button>
       </Box>
