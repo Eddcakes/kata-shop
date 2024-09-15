@@ -1,25 +1,58 @@
-import { Box, Image } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Image,
+  NumberDecrementStepper,
+  NumberIncrementStepper,
+  NumberInput,
+  NumberInputField,
+  NumberInputStepper,
+} from "@chakra-ui/react";
+import { formatPrice } from "../utils";
+import { Product } from "../models";
+import { useState } from "react";
 
-const getRandomInt = (max: number) => {
-  return Math.floor(Math.random() * max);
-};
+interface CardProps {
+  product: Product;
+  handleAddToBasket: (sku: string, quantity: number) => void;
+}
 
-export function Card() {
-  const data = {
-    sku: String.fromCharCode(getRandomInt(26) + 97),
-    price: 50,
-    offer: getRandomInt(2) > 0 ? "3 for 130" : null,
-  };
+export function Card({ product, handleAddToBasket }: CardProps) {
+  const { sku, price, offer } = product;
+  const [quantity, setQuantity] = useState(1);
+
   return (
     <Box maxW={{ base: "100%", md: "200px" }}>
       <Image src="https://placehold.co/200x100" alt="placeholder" />
       <Box>
         <Box display="flex" justifyContent="space-between">
-          <Box>{data.sku}</Box>
-          <Box>{data.price}</Box>
+          <Box>{sku}</Box>
+          <Box>{formatPrice(price)}</Box>
         </Box>
         <Box color="red.500" textAlign="center">
-          {data.offer}
+          {offer}
+        </Box>
+        <Box>
+          <NumberInput
+            step={1}
+            min={1}
+            value={quantity}
+            onChange={(value) => setQuantity(parseInt(value))}
+          >
+            <NumberInputField />
+            <NumberInputStepper>
+              <NumberIncrementStepper />
+              <NumberDecrementStepper />
+            </NumberInputStepper>
+          </NumberInput>
+          <Button
+            onClick={() => {
+              handleAddToBasket(sku, quantity);
+              setQuantity(1);
+            }}
+          >
+            Add to basket
+          </Button>
         </Box>
       </Box>
     </Box>
