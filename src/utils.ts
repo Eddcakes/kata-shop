@@ -1,4 +1,4 @@
-import { type PriceList, type Basket } from "./models";
+import type { PriceList, Basket, Product } from "./models";
 
 // assuming price is in pennies
 export const formatPrice = (price: number) => {
@@ -27,11 +27,22 @@ export const logger = (message: string) => {
   console.log(message);
 };
 
-export const calculateBasketTotal = (basket: Basket, priceList: PriceList) => {
+export const calculateBasketTotal = (
+  basket: Basket,
+  priceList: PriceList | null
+) => {
   let total = 0;
+  if (priceList == null) {
+    logger("No price list found");
+    return total;
+  }
   Object.keys(basket).forEach((sku) => {
     // should never be null|undefined, but avoids ignoring TS error
     if (basket[sku] == null) return;
+    if (priceList[sku] == null) {
+      logger(`No price found for SKU: ${sku}`);
+      return;
+    }
     const price = priceList[sku].price;
     const quantity = basket[sku];
     const offer = priceList[sku].offer;
@@ -61,4 +72,20 @@ const offerHelper = (offerText: string) => {
     offerQuantity: parseInt(quantity),
     offerPrice: parseInt(price),
   };
+};
+
+export const priceListFromProductsList = (
+  productsList: Product[]
+): PriceList => {
+  const priceList: PriceList = {};
+  for (const product of productsList) {
+    if (product.price == null) {
+      logger(`Product with SKU: ${product.sku} is missing a price`);
+    }
+    if (priceList[product.sku] != null) {
+      logger(`Duplicate SKU: ${product.sku} found`);
+    }
+    priceList[product.sku] = { price: product.price, offer: product.offer };
+  }
+  return priceList;
 };

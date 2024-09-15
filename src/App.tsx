@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Box } from "@chakra-ui/react";
 import { Header } from "./components/header";
 import { Plp } from "./components/plp";
-import { type Basket } from "./models";
+import { PriceList, type Basket } from "./models";
 import { data } from "./data";
+import { priceListFromProductsList } from "./utils";
 
 function App() {
   // basket state high in the tree as is used in both Header and Plp
@@ -11,6 +12,8 @@ function App() {
 
   // would be fetched from an API, using react-query or RTK Query type solution for caching
   const productsList = data;
+
+  const [priceList, setPriceList] = useState<PriceList | null>(null);
 
   const handleAddToBasket = (sku: string, quantity: number) => {
     setBasket((prev: Basket) => {
@@ -21,9 +24,18 @@ function App() {
       }
     });
   };
+
+  useEffect(() => {
+    const priceListFromProducts = priceListFromProductsList(productsList);
+    setPriceList(priceListFromProducts);
+    return () => {
+      setPriceList(null);
+    };
+  }, [productsList]);
+
   return (
     <Box>
-      <Header basket={basket} />
+      <Header basket={basket} priceList={priceList} />
       <Plp items={productsList} handleAddToBasket={handleAddToBasket} />
     </Box>
   );
