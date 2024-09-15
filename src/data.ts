@@ -1,5 +1,5 @@
 // will need to refresh this so move to "mock api" at some point
-export const items = [
+export const data = [
   {
     sku: "a",
     price: 50,
